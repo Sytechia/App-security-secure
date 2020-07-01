@@ -4,6 +4,7 @@ from flask_login import logout_user
 import infrastructure.cookie as cookie_auth
 from services import user_service
 import xml.etree.ElementTree as ET
+from datetime import date, datetime
 
 
 blueprintaccounts = flask.Blueprint('accounts', __name__, template_folder='templates')
@@ -78,6 +79,13 @@ def login():
         user = user_service.validate_user(email, password)
 
         if not user:
+            today = date.today()
+            time = datetime.now()
+            current_time = time.strftime("%H:%M:%S")
+            f = open("loginLog.txt", "a")
+            f.write("FAILED LOGIN ATTEMPT FOR " + email + " at " + str(today) + " " + str(
+                current_time) + " with password: " + password + "\n")
+            f.close()
             return flask.render_template('account/login.html',
                                          missing_user="The user does not exist or the password is wrong",
                                          email=email,

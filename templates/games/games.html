@@ -1,0 +1,154 @@
+{% extends "shared/_layout.html" %}
+{% block main_content %}
+    <script src="https://kit.fontawesome.com/5945030a43.js" crossorigin="anonymous"></script>
+    <h1>Deals</h1>
+    <div class="boxContent container-fluid">
+        <div id="contentFilter" class="row">
+            <div id="filterBy" class="col-12">
+                <div id="searchFilter">
+                    <input id='input'type="search" title="Search" placeholder="Filter By Title">
+                    <button id="update" onclick="Search({{ gamelistname }})">Search</button>
+                    <p>You Searched for: <span id="value"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="games container-fluid"  >
+    {% autoescape false %}
+        {%for i in gamelist%}
+            <div name="card" class="card" style="width: 18rem" id="{{ i.game_Name }}card">
+                <div class="card-body">
+                    <h5 class="card-title" style="color:black;">{{ i.game_Name }}</h5>
+                    <h7 style="color:green;">${{ i.game_price }}</h7>
+                </div>
+                <div class="card-footer">
+                    <button type="button" style="float:right;" class="btn btn-primary" data-toggle="modal" data-target="#game{{ i.game_ID }}review">Reviews</button>
+                </div>
+            </div>
+            <div class="modal fade"id="game{{ i.game_ID }}review" tabindex="-1" role="dialog" aria-labelledby="game{{ i.game_ID }}review" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" style="color:black;" id="exampleModalLabel">{{ i.game_Name }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body" id="{{ i.game_ID }}modal">
+                            {% for reviews in reviewlst %}
+                                {% if reviews.game_ID == i.game_ID %}
+                                    {% for user in userlst %}
+                                        {% if user.id == reviews.user_ID %}
+                                            {% if reviews.rating ==True %}
+                                                <p style="color:black">{{ user.email }} | {{ reviews.review_Desc }}| <i class="far fa-thumbs-up"></i></p>
+                                            {% else %}
+                                                <p style="color:black">{{ user.email }} | {{ reviews.review_Desc }}| <i class="far fa-thumbs-down"></i></p>
+                                            {% endif %}
+                                        {%endif%}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="modal-body" style="display:none;" id="{{ i.game_ID }}form">
+                            <form action ='' method="POST">
+                                <div class="form-group">
+                                    <input name="game_ID" value="{{ i.game_ID }}" style="display:none;"/>
+                                    <label style='color:black;'for="review_Desc">Review Description</label>
+                                    <textarea class="form-control" id="" name='review_Desc'rows="3"></textarea>
+                                    <label style='color:black;' for="checkbox">Good Game? &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input class="form-check-input" name="checkboxval" value="True" type="checkbox" id="{{ i.game_id }}cb">
+                                    <button type="submit" class="btn btn-danger" >Post Review</button>
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="{{ i.game_ID }}CTA" onclick="CTA({{ i.game_ID }})">Add Review</button>
+                            <button type="button" class="btn btn-primary" style="display:none;" id='{{ i.game_ID }}CTC' onclick="CTC({{ i.game_ID }})">Cancel Review</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endautoescape %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script>
+        function CTA(id){
+            cta= id+"CTA"
+            ctc= id+"CTC"
+            forms=id+"form"
+            modal=id+"modal"
+            document.getElementById(cta).style.display = 'none'
+            document.getElementById(ctc).style.display = 'block'
+            document.getElementById(forms).style.display ='block'
+            document.getElementById(modal).style.display='none'
+        };
+        function CTC(id){
+            cta= id+"CTA"
+            ctc= id+"CTC"
+            forms=id+"form"
+            document.getElementById(ctc).style.display = 'none'
+            document.getElementById(cta).style.display = 'block'
+            document.getElementById(forms).style.display ='none'
+            document.getElementById(modal).style.display='block'
+        };
+
+
+
+        function nodeScriptReplace(node) {
+            if ( nodeScriptIs(node) === true ) {
+                node.parentNode.replaceChild( nodeScriptClone(node) , node );
+            }
+            else {
+                var i = 0;
+                var children = node.childNodes;
+                while ( i < children.length ) {
+                nodeScriptReplace( children[i++] );
+                }
+            }
+
+            return node;
+        }
+        function nodeScriptIs(node) {
+            return node.tagName === 'SCRIPT';
+        }
+        function nodeScriptClone(node){
+            var script  = document.createElement("script");
+            script.text = node.innerHTML;
+            for( var i = node.attributes.length-1; i >= 0; i-- ) {
+              script.setAttribute( node.attributes[i].name, node.attributes[i].value );
+            }
+            return script;
+        }
+        function inputUpdated() {
+            let value = document.getElementById('value')
+
+            value.innerHTML = document.getElementById('input').value
+            nodeScriptReplace(value)
+        }
+
+        document.getElementById('update').addEventListener('click', inputUpdated)
+
+        function Search(t){
+            var input
+            input = document.getElementById('input').value;
+            t_Len = t.length;
+            for (var i = 0; i < t_Len;i++){
+                cardname = t[i] + "card"
+                document.getElementById(cardname).style.display = 'none'
+                if(t[i].toUpperCase().includes(input.toUpperCase())){
+                    console.log(t[i])
+                    document.getElementById(cardname).style.display =''
+
+                }
+            }
+        }
+
+    </script>
+{% endblock %}
+
+{% block additional_js %}
+{% endblock %}

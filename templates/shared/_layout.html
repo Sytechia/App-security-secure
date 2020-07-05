@@ -6,9 +6,20 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 
+
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <link href="/static/css/home.css" rel="stylesheet">
+
+    <link href="/static/css/shared.css" rel="stylesheet">
+
+
+
+
+    {% block home_css %}
+    {% endblock %}
 
     <style>
         body {
@@ -21,34 +32,22 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/">App Security</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/shop">Shop <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/aboutus">About Us <span class="sr-only">(current)</span></a>
-            </li>
-            {% if user_id %}
-            <li class="nav-item"><a class="nav-link" href="/accounts">Account</a></li>
-            <li class="nav-item"><a class="nav-link" href="/accounts/logout" id="last_nav_link">Logout</a></li>
-            {% else %}
-            <li class="nav-item"><a class="nav-link" href="/accounts/login">Login</a></li>
-            <li class="nav-item"><a class="nav-link" href="/accounts/register" id="last_nav_link">Register</a></li>
-            {% endif %}
-
-        </ul>
+    <a class="navbar-brand" href="/" style="font-size: 30px">Mist</a>
+    <div class="container purple topBotomBordersIn" style="justify-content: left !important;">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/shop">Shop <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/aboutus">About Us <span class="sr-only">(current)</span></a>
+        {% if user_id %}
+            <a class="nav-link" href="/accounts">Account</a>
+            <a class="nav-link" href="/accounts/logout" id="last_nav_link">Logout</a>
+        {% else %}
+            <a class="nav-link" href="/accounts/login">Login</a>
+            <a class="nav-link" href="/accounts/register" id="last_nav_link">Register</a>
+        {% endif %}
     </div>
+
 </nav>
+
 
 <div class="main_content">
     {% block main_content %}{% endblock %}
@@ -65,7 +64,10 @@
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 
-{% block additional_js %}{% endblock %}
+{% block additional_js %}
+
+{% endblock %}
+
 
 </body>
 </html>

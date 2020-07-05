@@ -1,31 +1,32 @@
 import flask
-from flask import jsonify,redirect,request,render_template,Response
+from flask import jsonify, redirect, request, render_template, Response
 from flask_login import logout_user
 import infrastructure.cookie as cookie_auth
-from services import user_service
+from infrastructure.view_modifiers import response
+from services import user_service, admin_service
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
 
+from viewmodels.account.accountIndexViewModel import accountIndexViewModel
+from viewmodels.account.login_viewmodel import LoginViewModel
 
 blueprintaccounts = flask.Blueprint('accounts', __name__, template_folder='templates')
 
 
 @blueprintaccounts.route('/accounts')
+@response(template_file='account/accountpage_user.html')
 def index():
-    user_id = cookie_auth.get_user_id_via_cookie(flask.request)
-    if user_id is None:
-        return flask.redirect('/accounts/login')
-    user = user_service.find_user_by_id(user_id)
-    if not user:
+    vm = accountIndexViewModel()
+    if not vm.user:
         return flask.redirect('/accounts/login')
 
-    return flask.render_template('account/acountpage_user.html', user=user,
-                                 user_id=cookie_auth.get_user_id_via_cookie(flask.request))
+    return vm.convert_to_dict()
 
 
 #### Start of Register
 
 @blueprintaccounts.route('/accounts/register')
+
 def render_register():
     return flask.render_template('account/register.html')
 
@@ -60,46 +61,75 @@ def register():
             'user_id': cookie_auth.get_user_id_via_cookie(flask.request),
         }
 
+
 #### Login
 @blueprintaccounts.route('/accounts/login')
 def render_login():
     return flask.render_template('account/login.html')
 
+
 @blueprintaccounts.route('/accounts/login', methods=["GET", "POST"])
+@response(template_file='account/login.html')
 def login():
     if flask.request.method == "POST":
-        email = flask.request.form.get('email').lower().strip()
-        password = flask.request.form.get('password')
-        if not email or not password:
-            return flask.render_template('account/login.html', missing_fields="Some fields are missing",
-                                         email=email,
-                                         password=password,
-                                         user_id=cookie_auth.get_user_id_via_cookie(flask.request))
+        vm = LoginViewModel()
+        vm.validate()
 
-        user = user_service.validate_user(email, password)
+        if vm.error:
+            return vm.convert_to_dict()
+
+        user = user_service.login_user_self(vm.email, vm.password)
+
 
         if not user:
             today = date.today()
             time = datetime.now()
             current_time = time.strftime("%H:%M:%S")
             f = open("loginLog.txt", "a")
-            f.write("FAILED LOGIN ATTEMPT FOR " + email + " at " + str(today) + " " + str(
-                current_time) + " with password: " + password + "\n")
+            f.write("FAILED LOGIN ATTEMPT FOR " + vm.email + " at " + str(today) + " " + str(
+                current_time) + " with password: " + vm.password + "\n")
             f.close()
-            return flask.render_template('account/login.html',
-                                         missing_user="The user does not exist or the password is wrong",
-                                         email=email,
-                                         password=password,
-                                         user_id=cookie_auth.get_user_id_via_cookie(flask.request))
+
+        if not user:
+            vm.error = "The account does not exist or the password is wrong."
+            return vm.convert_to_dict()
 
         if user:
             resp = flask.redirect('/accounts')
             cookie_auth.set_auth(resp, user.id)
-            if user.email == 'warlords47@gmail.com':
-                user_id = 1
-                user_service.check_admin_or_user(user_id)
+            return resp
+
+
+
+@blueprintaccounts.route('/accounts/adminlogin')
+def render_login_admin():
+    return flask.render_template('account/loginadmin.html')
+
+
+@blueprintaccounts.route('/accounts/adminlogin', methods=["GET", "POST"])
+@response(template_file='account/loginadmin.html')
+def loginadmin():
+    if flask.request.method == "POST":
+        vm = LoginViewModel()
+        vm.validate()
+
+        if vm.error:
+            return vm.convert_to_dict()
+
+        admin = admin_service.login_admin_self(vm.email, vm.password)
+
+        if not admin:
+            vm.error = "The account does not exist or the password is wrong(admin)."
+            return vm.convert_to_dict()
+
+        if admin:
+            resp = flask.redirect('/admin')
+            cookie_auth.set_auth(resp, admin.id)
+            admin_service.check_admin_or_user(admin.id)
 
             return resp
+
+
 
 @blueprintaccounts.route('/accounts/logout')
 def logout():
@@ -108,8 +138,3 @@ def logout():
     cookie_auth.logout(resp)
 
     return resp
-
-
-
-
-

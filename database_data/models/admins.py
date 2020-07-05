@@ -1,11 +1,11 @@
 import datetime
 import sqlalchemy
 from database_data.modelbase import SqlAlchemyBase
-from flask_login import current_user
+from flask_login import current_user, UserMixin
 from flask_admin import AdminIndexView
 
 
-class Admins(SqlAlchemyBase):
+class Admins(SqlAlchemyBase,UserMixin):
     __tablename__ = 'admin'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)

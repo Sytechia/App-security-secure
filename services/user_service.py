@@ -1,4 +1,6 @@
 from typing import Optional
+
+from flask_login import login_user
 from passlib.handlers.sha2_crypt import sha512_crypt as crypto
 import database_data.database_session as db_session
 from database_data.models.users import User
@@ -18,6 +20,19 @@ def find_user_by_email(email):
     session = db_session.create_session()
     return session.query(User).filter(User.email == email).first()
 
+def login_user_self(email: str, password: str) -> Optional[User]:
+    session = db_session.create_session()
+    try:
+        user = session.query(User).filter(User.email == email).first()
+        if not user:
+            return None
+
+        if not verify_hash(user.hashed_password, password):
+            return None
+
+        return user
+    finally:
+        session.close()
 
 def create_user(name: str, email: str, password: str) -> Optional[User]:
     if find_user_by_email(email):
@@ -61,5 +76,5 @@ def find_user_by_id(user_id: int):
 
 def check_admin_or_user(user_id):
     session = db_session.create_session()
-    user_id = session.query(User).filter(User.id == user_id).first()
+    user_id = session.query().filter(User.id == user_id).first()
     return login_user(user_id)

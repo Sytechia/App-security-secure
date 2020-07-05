@@ -11,7 +11,7 @@ from database_data.models.game_list import Game
 from database_data.models.reviews import Reviews
 from database_data.models.users import User, MyModelView
 
-app = flask.Flask(__name__, instance_path="/App-Security/templates/shared")
+app = flask.Flask(__name__, instance_path="/App-Security/templates/shared", static_folder='templates/static')
 db = SQLAlchemy()
 admin = Admin(app, index_view=MyAdminView())
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -25,7 +25,7 @@ db.init_app(app)
 @login.user_loader
 def load_user(user_id):
     session = db_session.create_session()
-    return session.query(User).get(user_id)
+    return session.query(Admins).get(user_id)
 
 
 def main():

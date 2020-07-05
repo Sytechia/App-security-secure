@@ -4,15 +4,13 @@
 {% block main_content %}
     <div class="form-container">
     <form action="" method="POST" class="account-form">
-        <h1>Login to Fake Steam</h1>
+        <h1>Login to Mist</h1>
         <input name="email" type="text" placeholder="Your email address" class="form-control" value="{{ email }}">
         <input  name="password" type="password" placeholder="Password" class="form-control" value="{{ password }}">
         <button type="submit" class="btn btn-danger">Login</button>
         <div style="clear:both;"></div>
-    {% if missing_fields %}
-        <div class="error-msg">{{ missing_fields }}</div>
-    {% elif missing_user %}
-        <div class="error-msg">{{ missing_user }}</div>
+    {% if error %}
+        <div class="error-msg">{{ error }}</div>
     {% endif %}
     </form>
 </div>

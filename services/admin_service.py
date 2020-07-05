@@ -20,7 +20,7 @@ def find_admin_by_email(email):
     return session.query(Admins).filter(Admins.email == email).first()
 
 
-def create_admin(name: str, email: str, password: str) -> Optional[User]:
+def create_admin(name: str, email: str, password: str):
     if find_admin_by_email(email):
         return None
     admin = Admins()
@@ -59,8 +59,31 @@ def find_admin_by_id(user_id: int):
     admin = session.query(Admins).filter(Admins.id == user_id).first()
     return admin
 
+def find_Admin_id_by_email(email):
+    session = db_session.create_session()
+    admin_email = session.query(Admins).filter(Admins.email == email).first()
+    return admin_email.id
+
 
 def check_admin_or_user(admin_id):
     session = db_session.create_session()
     admin_id = session.query(Admins).filter(Admins.id == admin_id).first()
     return login_user(admin_id)
+
+
+def login_admin_self(email, password):
+    session = db_session.create_session()
+    try:
+        admin = session.query(Admins).filter(Admins.email == email).first()
+        if not admin:
+            return None
+
+        # if not verify_hash(user.hashed_password, password):
+        #     return None
+
+        if password != admin.hashed_password:
+            return None
+
+        return admin
+    finally:
+        session.close()

@@ -26,5 +26,3 @@ FAILED LOGIN ATTEMPT FOR warlords47@gmail.com at 2020-07-06 23:17:00 with passwo
 FAILED LOGIN ATTEMPT FOR warlords47@gmail.com at 2020-07-06 23:17:31 with password: 12345
 FAILED LOGIN ATTEMPT FOR warlords47@gmail.com at 2020-07-06 23:21:31 with password: 54321
 FAILED LOGIN ATTEMPT FOR warlords47@gmail.com at 2020-07-06 23:21:35 with password: 12345678
-FAILED LOGIN ATTEMPT FOR warlords47@gmail.com at 2020-07-06 23:21:42 with password: abcde
-FAILED LOGIN ATTEMPT FOR warlords47@gmail.com at 2020-07-06 23:21:46 with password: VARCHAR

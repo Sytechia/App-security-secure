@@ -30,15 +30,20 @@
         xmlhttp.send(xml);
     }
 </script>
-<div class="form-container">
+<div class="form-container" style="text-align:center">
     <form action="" method="POST" class="account-form">
-        <h1>Register at Fake Steam</h1>
-        <input name="name" type="text" id='name' placeholder="Your name" class="form-control" value="{{ name }}">
+        <br><br>
+        <h1>Register at Mist</h1>
+        <br>
+        <input name="name" type="text" id='name' placeholder="Your name" class="form-control" value="{{ name }}" style="width:25%; position:absolute; left:37.5%;">
+        <br><br>
         <input name="email" type="text" id='email' placeholder="Your email address" class="form-control"
-            value="{{ email }}">
+            value="{{ email }}" style="width:25%; position:absolute; left:37.5%;">
+        <br><br>
         <input name="password" type="password" id='password' placeholder="Password" class="form-control"
-            value="{{ password }}">
-        <button type="button" style="width: 1000px" class="btn-danger" onclick="myFunction()">Register</button>
+            value="{{ password }}" style="width:25%; position:absolute; left:37.5%;">
+        <br><br><br>
+        <button type="button" style="width: 25%" class="btn btn-danger" onclick="myFunction()">Register</button>
         <div style="clear:both;"></div>
         <div class="error-msg" style='display:none;' id='MissingFields'>Some fields are missing</div>
         <div class="error-msg" style='display:none;' id='Exisiting'>The email used already exists</div>

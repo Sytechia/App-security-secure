@@ -1,49 +1,61 @@
 {% extends "shared/_layout.html" %}
+{% block account_css %}
+    <link href="../static/css/account.css" rel="stylesheet">
+{% endblock %}
 {% block main_content %}
-<script>
-    function myFunction() {
-        document.getElementById('MissingFields').style.display = 'none'
-        document.getElementById('Exisiting').style.display = 'none'
+    <script>
+        function myFunction() {
+            document.getElementById('MissingFields').style.display = 'none'
+            document.getElementById('Exisiting').style.display = 'none'
 
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST", "/accounts/register");
-        var response;
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-                response = xmlhttp.response
-                if (response === 'MF') {
-                    document.getElementById('MissingFields').style.display = 'block'
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "/accounts/register");
+            var response;
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                    response = xmlhttp.response
+                    if (response === 'MF') {
+                        document.getElementById('MissingFields').style.display = 'block'
+                    } else if (response === 'EE') {
+                        document.getElementById('Exisiting').style.display = 'block'
+                    } else {
+                        window.location = '/accounts'
+                    }
                 }
-                else if (response === 'EE') {
-                    document.getElementById('Exisiting').style.display = 'block'
-                }
-                else{
-                    window.location = '/accounts'
-                }
-            }
-        };
-        xmlhttp.setRequestHeader('Content-Type', 'text/xml');
-        Name = document.getElementById('name').value
-        email = document.getElementById('email').value
-        password = document.getElementById('password').value
-        var xml = "<?xml version='1.0'?><query><name>" + Name + "</name><email>" + email + "</email><password>" + password + "</password></query>";
-        xmlhttp.send(xml);
-    }
-</script>
-<div class="form-container">
-    <form action="" method="POST" class="account-form">
-        <h1>Register at Fake Steam</h1>
-        <input name="name" type="text" id='name' placeholder="Your name" class="form-control" value="{{ name }}">
-        <input name="email" type="text" id='email' placeholder="Your email address" class="form-control"
-            value="{{ email }}">
-        <input name="password" type="password" id='password' placeholder="Password" class="form-control"
-            value="{{ password }}">
-        <button type="button" style="width: 1000px" class="btn-danger" onclick="myFunction()">Register</button>
-        <div style="clear:both;"></div>
-        <div class="error-msg" style='display:none;' id='MissingFields'>Some fields are missing</div>
-        <div class="error-msg" style='display:none;' id='Exisiting'>The email used already exists</div>
-    </form>
-</div>
+            };
+            xmlhttp.setRequestHeader('Content-Type', 'text/xml');
+            Name = document.getElementById('name').value
+            email = document.getElementById('email').value
+            password = document.getElementById('password').value
+            var xml = "<?xml version='1.0'?><query><name>" + Name + "</name><email>" + email + "</email><password>" + password + "</password></query>";
+            xmlhttp.send(xml);
+        }
+    </script>
+    {#<div class="form-container">#}
+    {#    <form action="" method="POST" class="account-form">#}
+    {#        <h1>Register at Fake Steam</h1>#}
+    {#        <input name="name" type="text" id='name' placeholder="Your name" class="form-control" value="{{ name }}">#}
+    {#        <input name="email" type="text" id='email' placeholder="Your email address" class="form-control"#}
+    {#            value="{{ email }}">#}
+    {#        <input name="password" type="password" id='password' placeholder="Password" class="form-control"#}
+    {#            value="{{ password }}">#}
+    {#        <button type="button" style="width: 1000px" class="btn-danger" onclick="myFunction()">Register</button>#}
+    {#        <div style="clear:both;"></div>#}
+    {#        <div class="error-msg" style='display:none;' id='MissingFields'>Some fields are missing</div>#}
+    {#        <div class="error-msg" style='display:none;' id='Exisiting'>The email used already exists</div>#}
+    {#    </form>#}
+    {#</div>#}
+    <div class="login">
+        <h1>Register at Mist</h1>
+        <form method="POST">
+            <input type="text" name="name" id='name' placeholder="Your Name" value="{{ email }}"/>
+            <input type="text" name="email" id='email' placeholder="Your Email" value="{{ email }}"/>
+            <input type="password" name="password" id='password' placeholder="Your Password" value="{{ password }}"/>
+            <button type="button" class="btn btn-primary btn-block btn-large" onclick="myFunction()">Register</button>
+            <div class="error-msg" style='display:none;' id='MissingFields'>Some fields are missing</div>
+            <div class="error-msg" style='display:none;' id='Exisiting'>The email used already exists</div>
+        </form>
+    </div>
 
 {% endblock %}
 {% block additional_js %}

@@ -5,3 +5,5 @@ import database_data.models.game_list
 import database_data.models.users
 
 import database_data.models.reviews
+
+import database_data.models.logs

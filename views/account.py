@@ -3,7 +3,7 @@ from flask import jsonify, redirect, request, render_template, Response
 from flask_login import logout_user
 import infrastructure.cookie as cookie_auth
 from infrastructure.view_modifiers import response
-from services import user_service, admin_service
+from services import user_service, admin_service, log_service
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
 
@@ -85,6 +85,11 @@ def login():
             today = date.today()
             time = datetime.now()
             current_time = time.strftime("%H:%M:%S")
+            log_DateTime = str(today) + " " + str(current_time)
+            log_Account = vm.email
+            log_AttemptedPassword = vm.password
+            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword)
+
             f = open("loginLog.txt", "a")
             f.write("FAILED LOGIN ATTEMPT FOR " + vm.email + " at " + str(today) + " " + str(
                 current_time) + " with password: " + vm.password + "\n")

@@ -5,6 +5,7 @@ import infrastructure.cookie as cookie_auth
 from infrastructure.view_modifiers import response
 from services import user_service, admin_service, log_service
 import xml.etree.ElementTree as ET
+from lxml import etree
 from datetime import date, datetime
 
 from viewmodels.account.accountIndexViewModel import accountIndexViewModel
@@ -33,27 +34,39 @@ def render_register():
 @blueprintaccounts.route('/accounts/register', methods=["POST", "GET"])
 def register():
     if flask.request.method == "POST":
-        parser = ET.XMLParser(dtd_validation= True)
-        xml = ET.fromstring(request.data, parser)
-        data = []
-        for i in xml:
-            data.append(i.text)
-        name = data[0]
-        email = data[1]
-        password = data[2]
-        if not name or not email or not password:
-            error = "MF"
-            return Response(error, mimetype='text/xml')
+        try:
+            # Getting xml data from request
+            xml = etree.fromstring(request.data)
+            xml_validator = etree.DTD(file = 'db/register.dtd')
+            isvalid = xml_validator.validate(xml)
+            # if xml input matches DTD it will proceed
+            if isvalid:
+                data = []
+                for i in xml:
+                    data.append(i.text)
+                name = data[0]
+                email = data[1]
+                password = data[2]
+                if not name or not email or not password:
+                    error = "MF"
+                    return Response(error, mimetype='text/xml')
 
-        user = user_service.create_user(name, email, password)
-        if not user:
-            error = 'EE'
-            return Response(error, mimetype='text/xml')
+                user = user_service.create_user(name, email, password)
+                if not user:
+                    error = 'EE'
+                    return Response(error, mimetype='text/xml')
 
-        resp = flask.redirect('/accounts')
-        cookie_auth.set_auth(resp, user.id)
+                resp = flask.redirect('/accounts')
+                cookie_auth.set_auth(resp, user.id)
 
-        return resp
+                return resp
+            # If xml does not match DTD it will return an error message
+            else:
+                return Response("TA",mimetype='text/xml')
+            # If xml input contains external Entities it will return error message
+        except:
+            return Response("TA", mimetype='text/xml')
+
 
     elif flask.request.method == "GET":
         return {

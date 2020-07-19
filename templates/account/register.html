@@ -5,8 +5,7 @@
 {% block main_content %}
     <script>
         function myFunction() {
-            document.getElementById('MissingFields').style.display = 'none'
-            document.getElementById('Exisiting').style.display = 'none'
+            document.getElementById('EM').style.display = 'none'
 
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.open("POST", "/accounts/register");
@@ -15,9 +14,14 @@
                 if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
                     response = xmlhttp.response
                     if (response === 'MF') {
-                        document.getElementById('MissingFields').style.display = 'block'
+                        document.getElementById('EM').style.display = 'block'
+                        document.getElementById("EM").innerText='Some fields are missing<'
                     } else if (response === 'EE') {
-                        document.getElementById('Exisiting').style.display = 'block'
+                        document.getElementById('EM').style.display = 'block'
+                        document.getElementById('EM').innerText ='The email used already exists'
+                    } else if (response === 'TA'){
+                        document.getElementById("EM").style.display = 'block'
+                        document.getElementById("EM").innerText = "An error occured please try again"
                     } else {
                         window.location = '/accounts'
                     }
@@ -31,20 +35,6 @@
             xmlhttp.send(xml);
         }
     </script>
-    {#<div class="form-container">#}
-    {#    <form action="" method="POST" class="account-form">#}
-    {#        <h1>Register at Fake Steam</h1>#}
-    {#        <input name="name" type="text" id='name' placeholder="Your name" class="form-control" value="{{ name }}">#}
-    {#        <input name="email" type="text" id='email' placeholder="Your email address" class="form-control"#}
-    {#            value="{{ email }}">#}
-    {#        <input name="password" type="password" id='password' placeholder="Password" class="form-control"#}
-    {#            value="{{ password }}">#}
-    {#        <button type="button" style="width: 1000px" class="btn-danger" onclick="myFunction()">Register</button>#}
-    {#        <div style="clear:both;"></div>#}
-    {#        <div class="error-msg" style='display:none;' id='MissingFields'>Some fields are missing</div>#}
-    {#        <div class="error-msg" style='display:none;' id='Exisiting'>The email used already exists</div>#}
-    {#    </form>#}
-    {#</div>#}
     <div class="login">
         <h1>Register at Mist</h1>
         <form method="POST">
@@ -52,8 +42,7 @@
             <input type="text" name="email" id='email' placeholder="Your Email" value="{{ email }}"/>
             <input type="password" name="password" id='password' placeholder="Your Password" value="{{ password }}"/>
             <button type="button" class="btn btn-primary btn-block btn-large" onclick="myFunction()">Register</button>
-            <div class="error-msg" style='display:none;' id='MissingFields'>Some fields are missing</div>
-            <div class="error-msg" style='display:none;' id='Exisiting'>The email used already exists</div>
+            <div class="error-msg" style='display:none;' id='EM'></div>
         </form>
     </div>
 

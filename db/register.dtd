@@ -1,0 +1,4 @@
+<!ELEMENT query (name,email,password)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT email (#PCDATA)>
+<!ELEMENT password (#PCDATA)>

@@ -33,8 +33,8 @@ def render_register():
 @blueprintaccounts.route('/accounts/register', methods=["POST", "GET"])
 def register():
     if flask.request.method == "POST":
-
-        xml = ET.fromstring(request.data)
+        parser = ET.XMLParser(dtd_validation= True)
+        xml = ET.fromstring(request.data, parser)
         data = []
         for i in xml:
             data.append(i.text)

@@ -14,7 +14,7 @@
         </div>
     </div>
     <div class="games container-fluid"  >
-    {% autoescape false %}
+    {% autoescape True %}
         {%for i in gamelist%}
             <div name="card" class="card" style="width: 18rem" id="{{ i.game_Name }}card">
                 <div class="card-body">

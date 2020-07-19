@@ -27,6 +27,11 @@ def load_user(user_id):
     session = db_session.create_session()
     return session.query(Admins).get(user_id)
 
+@login.user_loader
+def load_user(user_id):
+    session = db_session.create_session()
+    return session.query(User).get(user_id)
+
 
 def main():
     register_blueprints()

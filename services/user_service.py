@@ -1,3 +1,4 @@
+from random import random
 from typing import Optional
 
 from flask_login import login_user
@@ -14,6 +15,12 @@ def get_user():
     session = db_session.create_session()
     return session.query(User).all()
 
+charstrLst="1234567890"
+def makeRandom_Id():
+    char = ''
+    for i in range(22):
+        char += charstrLst[random.randint(0,9)]
+    return char
 
 
 def find_user_by_email(email):
@@ -34,10 +41,15 @@ def login_user_self(email: str, password: str) -> Optional[User]:
     finally:
         session.close()
 
-def create_user(name: str, email: str, password: str) -> Optional[User]:
+def create_user(id:int, name: str, email: str, password: str) -> Optional[User]:
     if find_user_by_email(email):
         return None
+
+    if find_user_by_id(id):
+        return None
+
     user = User()
+    user.id = id
     user.email = email
     user.name = name
     user.hashed_password = hash_text(password)

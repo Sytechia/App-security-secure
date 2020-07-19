@@ -1,6 +1,8 @@
+import random
+
 import flask
 from flask import jsonify, redirect, request, render_template, Response
-from flask_login import logout_user
+from flask_login import logout_user, current_user, login_user
 import infrastructure.cookie as cookie_auth
 from infrastructure.view_modifiers import response
 from services import user_service, admin_service, log_service
@@ -25,6 +27,16 @@ def index():
 
 
 #### Start of Register
+# This will make the random id to assign to users
+
+
+charstrLst="1234567890"
+def makeRandom_Id():
+    char = ''
+    for i in range(22):
+        char += charstrLst[random.randint(0,9)]
+    return char
+
 
 @blueprintaccounts.route('/accounts/register')
 def render_register():
@@ -34,38 +46,38 @@ def render_register():
 @blueprintaccounts.route('/accounts/register', methods=["POST", "GET"])
 def register():
     if flask.request.method == "POST":
-        try:
-            # Getting xml data from request
-            xml = etree.fromstring(request.data)
-            xml_validator = etree.DTD(file = 'db/register.dtd')
-            isvalid = xml_validator.validate(xml)
-            # if xml input matches DTD it will proceed
-            if isvalid:
-                data = []
-                for i in xml:
-                    data.append(i.text)
-                name = data[0]
-                email = data[1]
-                password = data[2]
-                if not name or not email or not password:
-                    error = "MF"
-                    return Response(error, mimetype='text/xml')
 
-                user = user_service.create_user(name, email, password)
-                if not user:
-                    error = 'EE'
-                    return Response(error, mimetype='text/xml')
+        # Getting xml data from request
+        xml = etree.fromstring(request.data)
+        xml_validator = etree.DTD(file = 'db/register.dtd')
+        isvalid = xml_validator.validate(xml)
+        # if xml input matches DTD it will proceed
+        if isvalid:
+            data = []
+            for i in xml:
+                data.append(i.text)
+            name = data[0]
+            email = data[1]
+            password = data[2]
+            if not name or not email or not password:
+                error = "MF"
+                return Response(error, mimetype='text/xml')
 
-                resp = flask.redirect('/accounts')
-                cookie_auth.set_auth(resp, user.id)
+            user = user_service.create_user(int(makeRandom_Id()),name, email, password)
+            if not user:
+                error = 'EE'
+                return Response(error, mimetype='text/xml')
+            resp = flask.redirect('/accounts')
+            cookie_auth.set_auth(resp, user.id)
 
-                return resp
-            # If xml does not match DTD it will return an error message
-            else:
-                return Response("TA",mimetype='text/xml')
-            # If xml input contains external Entities it will return error message
-        except:
-            return Response("TA", mimetype='text/xml')
+            return resp
+        # If xml does not match DTD it will return an error message
+        else:
+            return Response("TA",mimetype='text/xml')
+        # If xml input contains external Entities it will return error message
+
+
+        return Response("TA", mimetype='text/xml')
 
 
     elif flask.request.method == "GET":
@@ -84,35 +96,36 @@ def render_login():
 @response(template_file='account/login.html')
 def login():
     if flask.request.method == "POST":
-        vm = LoginViewModel()
-        vm.validate()
-
-        if vm.error:
-            return vm.convert_to_dict()
-
-        user = user_service.login_user_self(vm.email, vm.password)
+        email = flask.request.form.get('email').lower().strip()
+        password = flask.request.form.get('password')
+        if not email or not password:
+            return {
+                "error": "You have not filled your credentials properly"
+            }
+        user = user_service.validate_user(email, password)
 
         if not user:
             today = date.today()
             time = datetime.now()
             current_time = time.strftime("%H:%M:%S")
             log_DateTime = str(today) + " " + str(current_time)
-            log_Account = vm.email
-            log_AttemptedPassword = vm.password
+            log_Account = email
+            log_AttemptedPassword = password
             log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword)
 
             f = open("loginLog.txt", "a")
-            f.write("FAILED LOGIN ATTEMPT FOR " + vm.email + " at " + str(today) + " " + str(
-                current_time) + " with password: " + vm.password + "\n")
+            f.write("FAILED LOGIN ATTEMPT FOR " + email + " at " + str(today) + " " + str(
+                current_time) + " with password: " + password + "\n")
             f.close()
 
-        if not user:
-            vm.error = "The account does not exist or the password is wrong."
-            return vm.convert_to_dict()
+            return {
+                "error": "You have entered an invalid email or password"
+            }
 
         if user:
+            login_user(user)
             resp = flask.redirect('/accounts')
-            cookie_auth.set_auth(resp, user.id)
+            cookie_auth.set_auth(resp, current_user.id)
             return resp
 
 
@@ -121,28 +134,28 @@ def render_login_admin():
     return flask.render_template('account/loginadmin.html')
 
 
-@blueprintaccounts.route('/accounts/adminlogin', methods=["GET", "POST"])
-@response(template_file='account/loginadmin.html')
-def loginadmin():
-    if flask.request.method == "POST":
-        vm = LoginViewModel()
-        vm.validate()
-
-        if vm.error:
-            return vm.convert_to_dict()
-
-        admin = admin_service.login_admin_self(vm.email, vm.password)
-
-        if not admin:
-            vm.error = "The account does not exist or the password is wrong(admin)."
-            return vm.convert_to_dict()
-
-        if admin:
-            resp = flask.redirect('/admin')
-            cookie_auth.set_auth(resp, admin.id)
-            admin_service.check_admin_or_user(admin.id)
-
-            return resp
+# @blueprintaccounts.route('/accounts/adminlogin', methods=["GET", "POST"])
+# @response(template_file='account/loginadmin.html')
+# def loginadmin():
+#     if flask.request.method == "POST":
+#         vm = LoginViewModel()
+#         vm.validate()
+#
+#         if vm.error:
+#             return vm.convert_to_dict()
+#
+#         admin = admin_service.login_admin_self(vm.email, vm.password)
+#
+#         if not admin:
+#             vm.error = "The account does not exist or the password is wrong(admin)."
+#             return vm.convert_to_dict()
+#
+#         if admin:
+#             resp = flask.redirect('/admin')
+#             cookie_auth.set_auth(resp, admin.id)
+#             admin_service.check_admin_or_user(admin.id)
+#
+#             return resp
 
 
 @blueprintaccounts.route('/accounts/logout')

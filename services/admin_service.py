@@ -78,7 +78,7 @@ def login_admin_self(email, password):
         if not admin:
             return None
 
-        # if not verify_hash(user.hashed_password, password):
+        # if not verify_hash(admin.hashed_password, password):
         #     return None
 
         if password != admin.hashed_password:

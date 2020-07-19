@@ -26,7 +26,6 @@ def index():
 #### Start of Register
 
 @blueprintaccounts.route('/accounts/register')
-
 def render_register():
     return flask.render_template('account/register.html')
 
@@ -80,7 +79,6 @@ def login():
 
         user = user_service.login_user_self(vm.email, vm.password)
 
-
         if not user:
             today = date.today()
             time = datetime.now()
@@ -103,7 +101,6 @@ def login():
             resp = flask.redirect('/accounts')
             cookie_auth.set_auth(resp, user.id)
             return resp
-
 
 
 @blueprintaccounts.route('/accounts/adminlogin')
@@ -133,7 +130,6 @@ def loginadmin():
             admin_service.check_admin_or_user(admin.id)
 
             return resp
-
 
 
 @blueprintaccounts.route('/accounts/logout')

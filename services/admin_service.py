@@ -32,6 +32,18 @@ def create_admin(name: str, email: str, password: str):
     session.commit()
     return admin
 
+# def create_admin_test():
+#     if find_admin_by_email('mistadmin@gmail.com'):
+#         return None
+#     admin = Admins()
+#     admin.email = 'mistadmin@gmail.com'
+#     admin.name = 'Mist'
+#     admin.hashed_password = hash_text('12345')
+#     session = db_session.create_session()
+#     session.add(admin)
+#     session.commit()
+#     return admin
+
 
 def hash_text(text: str):
     hashed_text = crypto.encrypt(text, rounds=171204)
@@ -67,8 +79,7 @@ def find_Admin_id_by_email(email):
 
 def check_admin_or_user(admin_id):
     session = db_session.create_session()
-    admin_id = session.query(Admins).filter(Admins.id == admin_id).first()
-    return login_user(admin_id)
+    return session.query(Admins).filter(Admins.id == admin_id).first()
 
 
 def login_admin_self(email, password):

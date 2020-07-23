@@ -10,7 +10,7 @@ from infrastructure.num_convert import try_int
 auth_cookie_name = 'validated cookie'
 
 
-def set_auth(response: Response, user_id: int):
+def set_auth(response: Response, user_id):
     hash_val = __hash_text(str(user_id))
     val = f"{user_id}:{hash_val}"
     response.set_cookie(auth_cookie_name, val, secure=False, httponly=True, samesite='Lax')

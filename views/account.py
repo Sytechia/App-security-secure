@@ -14,6 +14,7 @@ import httpagentparser
 
 from viewmodels.account.accountIndexViewModel import accountIndexViewModel
 from viewmodels.account.login_viewmodel import LoginViewModel
+from viewmodels.account.Register_ViewModel import RegisterViewModel
 
 blueprintaccounts = flask.Blueprint('accounts', __name__, template_folder='templates')
 
@@ -32,12 +33,13 @@ def index():
 # This will make the random id to assign to users
 
 
-charstrLst="1234567890"
-def makeRandom_Id():
-    char = ''
-    for i in range(22):
-        char += charstrLst[random.randint(0,9)]
-    return char
+# charstrLst="1234567890"
+#
+# # def makeRandom_Id():
+# #     char = ''
+# #     for i in range(22):
+# #         char += charstrLst[random.randint(0,9)]
+# #     return char
 
 
 @blueprintaccounts.route('/accounts/register')
@@ -48,7 +50,6 @@ def render_register():
 @blueprintaccounts.route('/accounts/register', methods=["POST", "GET"])
 def register():
     if flask.request.method == "POST":
-
         # Getting xml data from request
         xml = etree.fromstring(request.data)
         xml_validator = etree.DTD(file = 'db/register.dtd')
@@ -65,10 +66,12 @@ def register():
                 error = "MF"
                 return Response(error, mimetype='text/xml')
 
-            user = user_service.create_user(int(makeRandom_Id()),name, email, password)
+            user = user_service.create_user(name, email, password)
+
             if not user:
                 error = 'EE'
                 return Response(error, mimetype='text/xml')
+
             resp = flask.redirect('/accounts')
             cookie_auth.set_auth(resp, user.id)
 
@@ -77,8 +80,6 @@ def register():
         else:
             return Response("TA",mimetype='text/xml')
         # If xml input contains external Entities it will return error message
-
-
         return Response("TA", mimetype='text/xml')
 
 
@@ -104,6 +105,7 @@ def login():
             return {
                 "error": "You have not filled your credentials properly"
             }
+
         user = user_service.validate_user(email, password)
 
         if not user:
@@ -141,34 +143,53 @@ def login():
             cookie_auth.set_auth(resp, current_user.id)
             return resp
 
+@blueprintaccounts.route('/accounts/adminregister')
+def render_register_admin():
+    return flask.render_template('account/registeradmin.html')
+
+@blueprintaccounts.route('/accounts/adminregister', methods=["GET", "POST"])
+@response(template_file='account/registeradmin.html')
+def registeradmin():
+    if flask.request.method == "POST":
+        vm = RegisterViewModel()
+        vm.validate()
+        if vm.error:
+            return vm.convert_to_dict()
+
+        admin = admin_service.create_admin(vm.name,vm.email,vm.password)
+
+        if not admin:
+            vm.error = "This admin has been created please try another email"
+            return vm.convert_to_dict()
+
+        return flask.redirect('/')
+
 
 @blueprintaccounts.route('/accounts/adminlogin')
 def render_login_admin():
     return flask.render_template('account/loginadmin.html')
 
 
-# @blueprintaccounts.route('/accounts/adminlogin', methods=["GET", "POST"])
-# @response(template_file='account/loginadmin.html')
-# def loginadmin():
-#     if flask.request.method == "POST":
-#         vm = LoginViewModel()
-#         vm.validate()
-#
-#         if vm.error:
-#             return vm.convert_to_dict()
-#
-#         admin = admin_service.login_admin_self(vm.email, vm.password)
-#
-#         if not admin:
-#             vm.error = "The account does not exist or the password is wrong(admin)."
-#             return vm.convert_to_dict()
-#
-#         if admin:
-#             resp = flask.redirect('/admin')
-#             cookie_auth.set_auth(resp, admin.id)
-#             admin_service.check_admin_or_user(admin.id)
-#
-#             return resp
+@blueprintaccounts.route('/accounts/adminlogin', methods=["GET", "POST"])
+@response(template_file='account/loginadmin.html')
+def loginadmin():
+    if flask.request.method == "POST":
+        vm = LoginViewModel()
+        vm.validate()
+        if vm.error:
+            return vm.convert_to_dict()
+
+        admin = admin_service.login_admin_self(vm.email, vm.password)
+        if not admin:
+            vm.error = "The account does not exist or the password is wrong(admin)."
+            return vm.convert_to_dict()
+
+        if admin:
+            resp = flask.redirect('/admin')
+            cookie_auth.set_auth(resp, admin.id)
+            login_user(admin_service.check_admin_or_user(admin.id))
+
+            return resp
 
 
 @blueprintaccounts.route('/accounts/logout')

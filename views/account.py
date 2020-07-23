@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 from lxml import etree
 from datetime import date, datetime
 import socket
+import httpagentparser
 
 from viewmodels.account.accountIndexViewModel import accountIndexViewModel
 from viewmodels.account.login_viewmodel import LoginViewModel
@@ -111,12 +112,19 @@ def login():
             current_time = time.strftime("%H:%M:%S")
             hostname = socket.gethostname()
             ip_address = socket.gethostbyname(hostname)
+            agent = request.environ.get('HTTP_USER_AGENT')
+            browser = httpagentparser.detect(agent)
+            if not browser:
+                browser = agent.split('/')[0]
+            else:
+                browser = browser['browser']['name']
             log_DateTime = str(today) + " " + str(current_time)
             log_Account = email
             log_AttemptedPassword = password
             log_HostName = hostname
             log_IPAddress = ip_address
-            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword, log_HostName, log_IPAddress)
+            log_browser = browser
+            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword, log_HostName, log_IPAddress, log_browser)
 
             f = open("loginLog.txt", "a")
             f.write("FAILED LOGIN ATTEMPT FOR " + email + " at " + str(today) + " " + str(

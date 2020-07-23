@@ -11,3 +11,4 @@ class Logs(SqlAlchemyBase):
     log_Attempted_Password = sqlalchemy.Column(sqlalchemy.String)
     log_HostName = sqlalchemy.Column(sqlalchemy.String)
     log_IP_Address = sqlalchemy.Column(sqlalchemy.String)
+    log_browser = sqlalchemy.Column(sqlalchemy.String)

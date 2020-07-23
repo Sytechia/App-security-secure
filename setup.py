@@ -10,6 +10,7 @@ from database_data.models.admins import MyAdminView,Admins
 from database_data.models.game_list import Game
 from database_data.models.reviews import Reviews
 from database_data.models.users import User, MyModelView
+from database_data.models.logs import Logs
 
 app = flask.Flask(__name__, instance_path="/App-Security/templates/shared")
 db = SQLAlchemy()
@@ -58,3 +59,4 @@ admin.add_view(ModelView(Admins, db.session))
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(ModelView(Game, db.session))
 admin.add_view(ModelView(Reviews, db.session))
+admin.add_view(ModelView(Logs, db.session))

@@ -9,3 +9,5 @@ class Logs(SqlAlchemyBase):
     log_DateTime = sqlalchemy.Column(sqlalchemy.String)
     log_Account = sqlalchemy.Column(sqlalchemy.String)
     log_Attempted_Password = sqlalchemy.Column(sqlalchemy.String)
+    log_HostName = sqlalchemy.Column(sqlalchemy.String)
+    log_IP_Address = sqlalchemy.Column(sqlalchemy.String)

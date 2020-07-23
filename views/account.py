@@ -9,6 +9,7 @@ from services import user_service, admin_service, log_service
 import xml.etree.ElementTree as ET
 from lxml import etree
 from datetime import date, datetime
+import socket
 
 from viewmodels.account.accountIndexViewModel import accountIndexViewModel
 from viewmodels.account.login_viewmodel import LoginViewModel
@@ -108,10 +109,14 @@ def login():
             today = date.today()
             time = datetime.now()
             current_time = time.strftime("%H:%M:%S")
+            hostname = socket.gethostname()
+            ip_address = socket.gethostbyname(hostname)
             log_DateTime = str(today) + " " + str(current_time)
             log_Account = email
             log_AttemptedPassword = password
-            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword)
+            log_HostName = hostname
+            log_IPAddress = ip_address
+            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword, log_HostName, log_IPAddress)
 
             f = open("loginLog.txt", "a")
             f.write("FAILED LOGIN ATTEMPT FOR " + email + " at " + str(today) + " " + str(

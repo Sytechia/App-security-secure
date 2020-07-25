@@ -12,7 +12,7 @@ from database_data.models.reviews import Reviews
 from database_data.models.users import User, MyModelView
 from database_data.models.logs import Logs
 
-app = flask.Flask(__name__, instance_path="/App-Security/templates/shared")
+app = flask.Flask(__name__, instance_path="/App-Security/templates/shared", static_folder='templates/static')
 db = SQLAlchemy()
 admin = Admin(app, index_view=MyAdminView())
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True

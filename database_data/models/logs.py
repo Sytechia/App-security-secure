@@ -12,3 +12,4 @@ class Logs(SqlAlchemyBase):
     log_HostName = sqlalchemy.Column(sqlalchemy.String)
     log_IP_Address = sqlalchemy.Column(sqlalchemy.String)
     log_browser = sqlalchemy.Column(sqlalchemy.String)
+    log_OS = sqlalchemy.Column(sqlalchemy.String)

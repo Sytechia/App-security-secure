@@ -11,6 +11,7 @@ from lxml import etree
 from datetime import date, datetime
 import socket
 import httpagentparser
+import platform
 
 from viewmodels.account.accountIndexViewModel import accountIndexViewModel
 from viewmodels.account.login_viewmodel import LoginViewModel
@@ -126,7 +127,8 @@ def login():
             log_HostName = hostname
             log_IPAddress = ip_address
             log_browser = browser
-            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword, log_HostName, log_IPAddress, log_browser)
+            log_OS = platform.system()
+            log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword, log_HostName, log_IPAddress, log_browser, log_OS)
 
             f = open("loginLog.txt", "a")
             f.write("FAILED LOGIN ATTEMPT FOR " + email + " at " + str(today) + " " + str(

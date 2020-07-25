@@ -110,13 +110,13 @@ def login():
         user = user_service.validate_user(email, password)
 
         if not user:
-            today = date.today()
-            time = datetime.now()
-            current_time = time.strftime("%H:%M:%S")
-            hostname = socket.gethostname()
-            ip_address = socket.gethostbyname(hostname)
+            today = date.today()                                                    #gets the date of the login attempt
+            time = datetime.now()                                                   #gets the time of the login attempt
+            current_time = time.strftime("%H:%M:%S")                #formats the time in a specific format
+            hostname = socket.gethostname()                             #gets the hostname of the attacker
+            ip_address = socket.gethostbyname(hostname)     #gets the ip address of the attacker
             agent = request.environ.get('HTTP_USER_AGENT')
-            browser = httpagentparser.detect(agent)
+            browser = httpagentparser.detect(agent)                 #gets the browser of the attacker
             if not browser:
                 browser = agent.split('/')[0]
             else:
@@ -127,7 +127,7 @@ def login():
             log_HostName = hostname
             log_IPAddress = ip_address
             log_browser = browser
-            log_OS = platform.system()
+            log_OS = platform.system()                                          #gets the operating system of the attacker
             log_service.createLog(log_DateTime, log_Account, log_AttemptedPassword, log_HostName, log_IPAddress, log_browser, log_OS)
 
             f = open("loginLog.txt", "a")

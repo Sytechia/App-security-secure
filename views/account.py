@@ -31,17 +31,6 @@ def index():
 
 
 #### Start of Register
-# This will make the random id to assign to users
-
-
-# charstrLst="1234567890"
-#
-# # def makeRandom_Id():
-# #     char = ''
-# #     for i in range(22):
-# #         char += charstrLst[random.randint(0,9)]
-# #     return char
-
 
 @blueprintaccounts.route('/accounts/register')
 def render_register():

@@ -14,3 +14,5 @@ class LoginViewModel(ViewModelBase):
             self.error = 'You must specify a email.'
         elif not self.password:
             self.error = 'You must specify a password.'
+        elif len(self.password.strip()) < 8:
+            self.error = 'The password must be at least 8 characters'

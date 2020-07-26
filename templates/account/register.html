@@ -38,9 +38,9 @@
     <div class="login">
         <h1>Register at Mist</h1>
         <form method="POST">
-            <input type="text" name="name" id='name' placeholder="Your Name" value="{{ email }}"/>
-            <input type="text" name="email" id='email' placeholder="Your Email" value="{{ email }}"/>
-            <input type="password" name="password" id='password' placeholder="Your Password" value="{{ password }}"/>
+            <input type="text" name="name" id='name' placeholder="Your Name" value="{{ email }}" required="required"/>
+            <input type="email" name="email" id='email' placeholder="Your Email" value="{{ email }}"/>
+            <input type="password" name="password" id='password' placeholder="Your Password" value="{{ password }}" required ="required"/>
             <button type="button" class="btn btn-primary btn-block btn-large" onclick="myFunction()">Register</button>
             <div class="error-msg" style='display:none;' id='EM'></div>
         </form>

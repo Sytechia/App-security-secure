@@ -13,7 +13,7 @@ auth_cookie_name = 'validated cookie'
 def set_auth(response: Response, user_id):
     hash_val = __hash_text(str(user_id))
     val = f"{user_id}:{hash_val}"
-    response.set_cookie(auth_cookie_name, val, secure=False, httponly=True, samesite='Lax')
+    response.set_cookie(auth_cookie_name, val, secure=False, max_age=timedelta(seconds=600),httponly=True, samesite='Lax')
 
 
 def __hash_text(text: str) -> str:

@@ -11,11 +11,13 @@ class RegisterViewModel(ViewModelBase):
         self.password = self.request_dict.password.strip()
 
     def validate(self):
-        if not self.name:
+        if not self.name or not self.name.strip():
             self.error = 'You must specify a name.'
         if not self.email or not self.email.strip():
             self.error = 'You must specify a email.'
         elif not self.password:
             self.error = 'You must specify a password.'
+        elif len(self.password.strip()) < 8:
+            self.error = 'The password must be at least 8 characters'
 
 

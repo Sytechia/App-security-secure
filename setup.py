@@ -15,10 +15,7 @@ from database_data.models.logs import Logs
 app = flask.Flask(__name__, instance_path="/App-Security/templates/shared", static_folder='templates/static')
 db = SQLAlchemy()
 admin = Admin(app, index_view=MyAdminView())
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'db',
-                                                                    'appSecurity.sqlite').strip()
-app.config['SECRET_KEY'] = 'mysecret'
+app.config.from_object('config.DevelopmentConfig')
 login = LoginManager(app)
 db.init_app(app)
 
@@ -28,17 +25,10 @@ def load_user(user_id):
     session = db_session.create_session()
     return session.query(Admins).get(user_id)
 
-@login.user_loader
-def load_user(user_id):
-    session = db_session.create_session()
-    return session.query(User).get(user_id)
-
-
 def main():
     register_blueprints()
     setup_db()
     app.run(debug=True)
-
 
 def setup_db():
     db_file = os.path.join(
